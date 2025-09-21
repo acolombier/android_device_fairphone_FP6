@@ -1,0 +1,85 @@
+name: Build
+
+on:
+  push:
+
+permissions:
+  contents: read # Fetch code (actions/checkout)
+  packages: write # Upload and publish packages to GitHub Packages
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:      
+    - name: Prepare
+      run: |
+        sudo apt update
+        sudo apt install -y \
+          bc \
+          bison \
+          build-essential \
+          ccache \
+          curl \
+          flex \
+          g++-multilib \
+          gcc-multilib \
+          git \
+          git-lfs \
+          gnupg \
+          gperf \
+          imagemagick \
+          lib32ncurses5-dev \
+          lib32readline-dev \
+          lib32z1-dev \
+          libdw-dev \
+          libelf-dev \
+          libncurses5 \
+          libncurses5-dev \
+          libsdl1.2-dev \
+          libssl-dev \
+          libxml2 \
+          libxml2-utils \
+          lz4 \
+          lzop \
+          pngcrush \
+          protobuf-compiler \
+          python3-protobuf \
+          rsync \
+          schedtool \
+          squashfs-tools \
+          xsltproc \
+          zip \
+          zlib1g-dev
+        mkdir -p ${{ github.workspace }}/bin
+        mkdir -p ${{ github.workspace }}/android/lineage
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ${{ github.workspace }}/bin/repo
+        chmod a+x ${{ github.workspace }}/bin/repo
+        echo "PATH=${{ github.workspace }}/bin:$PATH" >> "${GITHUB_ENV}"
+        python3 --version
+    - name: Download lineage
+      working-directory: ${{ github.workspace }}/android/lineage
+      run: |
+        repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --no-clone-bundle
+        repo sync
+        cat > .repo/local_manifests/fairphone_FP6.xml <<EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <manifest>
+          <!-- Device trees -->
+          <project name="ArianK16a/android_device_fairphone_FP6" path="device/fairphone/FP6" remote="github" revision="lineage-22.2" />
+
+          <!-- Kernel -->
+          <project name="ArianK16a/android_kernel_fairphone_sm7635" path="kernel/fairphone/sm7635" remote="github" revision="lineage-22.2"  />
+          <project name="ArianK16a/android_kernel_fairphone_sm7635-devicetrees" path="kernel/fairphone/sm7635-devicetrees" remote="github" revision="lineage-22.2"  />
+          <project name="ArianK16a/android_kernel_fairphone_sm7635-modules" path="kernel/fairphone/sm7635-modules" remote="github" revision="lineage-22.2"  />
+
+          <!-- Vendor - not pushed anywhere yet-->
+          <!-- <project name="ArianK16a/proprietary_vendor_fairphone_FP6" path="vendor/fairphone/FP6" remote="mainlining" revision="lineage-22.2" /> -->
+
+          <project name="ArianK16a/android_packages_apps_AlertSlider" path="packages/apps/AlertSlider" remote="github" revision="lineage-22.2" />
+        </manifest>
+        EOF
+    - name: Prepare vendor
+      working-directory: ${{ github.workspace }}/android/lineage/device/fairphone/FP6
+      run: |
+        ./extract-files.py https://fairphone-android-builds.ams3.digitaloceanspaces.com/FP6/A15/FP6.QREL.15.122.0.20250718182448_VS1E-factory.zip
+
