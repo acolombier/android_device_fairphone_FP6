@@ -77,11 +77,10 @@ jobs:
         EOF
         sudo chmod 600 ~/.s3ql/authinfo2
         sudo tee -a /etc/fuse.conf <<< "user_allow_other"
-        sudo ulimit -n 1024100
         mkfs.s3ql --authfile ~/.s3ql/authinfo2 s3c://s3.ca-east-tor.io.cloud.ovh.net/${S3_BUCKET} --plain --data-block-size 102400 --metadata-block-size 1024 || true
         sudo mkdir -p /mnt/s3
         sudo chown $USER /mnt/s3
-        mount.s3ql --authfile ~/.s3ql/authinfo2 s3c://s3.ca-east-tor.io.cloud.ovh.net/${S3_BUCKET} /mnt/s3 --allow-other --cachesize 10240000 --max-cache-entries 1024000
+        mount.s3ql --authfile ~/.s3ql/authinfo2 s3c://s3.ca-east-tor.io.cloud.ovh.net/${S3_BUCKET} /mnt/s3 --allow-other --cachesize 10240000 --max-cache-entries $((`ulimit -n` - 100))
         touch /mnt/s3/.ready
     - name: Prepare Android tools
       run: |
