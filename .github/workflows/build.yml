@@ -63,10 +63,10 @@ jobs:
         chmod 600 ${HOME}/.passwd-s3fs
         sudo mkdir -p /mnt/s3
         sudo s3fs "${S3_BUCKET}" /mnt/s3 -o passwd_file=${HOME}/.passwd-s3fs -o url=https://s3.ca-east-tor.io.cloud.ovh.net/ -o use_path_request_style
-        sudo chmod 777 /mnt/s3
+        touch /mnt/s3/.ready
         python3 --version
     - name: Download lineage
-      working-directory: ${{ github.workspace }}/android/lineage
+      working-directory: /mnt/s3/android/lineage
       run: |
         repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --no-clone-bundle
         repo sync
@@ -88,7 +88,7 @@ jobs:
         </manifest>
         EOF
     - name: Prepare vendor
-      working-directory: ${{ github.workspace }}/android/lineage/device/fairphone/FP6
+      working-directory: /mnt/s3/android/lineage/device/fairphone/FP6
       run: |
         ./extract-files.py https://fairphone-android-builds.ams3.digitaloceanspaces.com/FP6/A15/FP6.QREL.15.122.0.20250718182448_VS1E-factory.zip
 
