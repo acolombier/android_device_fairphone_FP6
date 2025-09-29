@@ -62,8 +62,7 @@ jobs:
         echo "${S3_CREDS}" > ${HOME}/.passwd-s3fs
         chmod 600 ${HOME}/.passwd-s3fs
         sudo mkdir -p /mnt/s3
-        sudo chmod 777 /mnt/s3
-        s3fs "${S3_BUCKET}" /mnt/s3 -o passwd_file=${HOME}/.passwd-s3fs -o url=https://s3.ca-east-tor.io.cloud.ovh.net/ -o use_path_request_style
+        sudo s3fs "${S3_BUCKET}" /mnt/s3 -o passwd_file=${HOME}/.passwd-s3fs -o use_path_request_style,allow_other,url=https://s3.ca-east-tor.io.cloud.ovh.net/
         touch /mnt/s3/.ready
         python3 --version
     - name: Download lineage
