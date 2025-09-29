@@ -61,8 +61,9 @@ jobs:
         echo "PATH=${{ github.workspace }}/bin:$PATH" >> "${GITHUB_ENV}"
         echo "${S3_CREDS}" > ${HOME}/.passwd-s3fs
         chmod 600 ${HOME}/.passwd-s3fs
-        mkdir -p /mnt/s3
-        s3fs "${S3_BUCKET}" /mnt/s3 -o passwd_file=${HOME}/.passwd-s3fs -o url=https://s3.ca-east-tor.io.cloud.ovh.net/ -o use_path_request_style
+        sudo mkdir -p /mnt/s3
+        sudo s3fs "${S3_BUCKET}" /mnt/s3 -o passwd_file=${HOME}/.passwd-s3fs -o url=https://s3.ca-east-tor.io.cloud.ovh.net/ -o use_path_request_style
+        sudo chmod 777 /mnt/s3
         python3 --version
     - name: Download lineage
       working-directory: ${{ github.workspace }}/android/lineage
