@@ -68,8 +68,8 @@ jobs:
     - name: Download lineage
       working-directory: /mnt/s3/android/lineage
       run: |
-        repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --no-clone-bundle
-        repo sync
+        repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --no-clone-bundle --verbose
+        repo sync --verbose
         cat > .repo/local_manifests/fairphone_FP6.xml <<EOF
         <?xml version="1.0" encoding="UTF-8"?>
         <manifest>
