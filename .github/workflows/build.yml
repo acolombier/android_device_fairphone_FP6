@@ -57,7 +57,7 @@ jobs:
         echo "${S3_CREDS}" > ${HOME}/.passwd-s3fs
         chmod 600 ${HOME}/.passwd-s3fs
         sudo mkdir -p /mnt/s3
-        sudo s3fs "${S3_BUCKET}" /mnt/s3 -o passwd_file=${HOME}/.passwd-s3fs -o use_path_request_style,allow_other,url=https://s3.ca-east-tor.io.cloud.ovh.net/
+        sudo s3fs "${S3_BUCKET}" /mnt/s3 -o passwd_file=${HOME}/.passwd-s3fs -o use_path_request_style,allow_other,use_cache=/tmp/s3,url=https://s3.ca-east-tor.io.cloud.ovh.net/
         touch /mnt/s3/.ready
         mkdir -p /mnt/s3/bin
         mkdir -p /mnt/s3/android/lineage
@@ -91,4 +91,15 @@ jobs:
       working-directory: /mnt/s3/android/lineage/device/fairphone/FP6
       run: |
         ./extract-files.py https://fairphone-android-builds.ams3.digitaloceanspaces.com/FP6/A15/FP6.QREL.15.122.0.20250718182448_VS1E-factory.zip
+    - name: Cleanup
+      if: always() && vars.AUTO_CLEANUP != null
+      env:
+        S3_CREDS: ${{ secrets.S3_CREDS }}
+      run: |
+        python3 -m pip install awscli
+        export AWS_ACCESS_KEY_ID=$(echo $S3_CREDS | cut -d: -f 1)
+        export AWS_SECRET_ACCESS_KEY=$(echo $S3_CREDS | cut -d: -f 2)
+        export AWS_REGION=us-west-2 # Unused
+        aws s3 rm --endpoint-url https://s3.ca-east-tor.io.cloud.ovh.net/  --recursive lineage-gh-ci/
+
 
