@@ -144,6 +144,9 @@ PRODUCT_PACKAGES += \
     android.frameworks.cameraservice.common@2.0 \
     android.frameworks.cameraservice.common-V1-ndk \
 
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/config/system-privapp-permissions-fpcamera.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/privapp-permissions-fps.xml
+
 # CAS
 PRODUCT_PACKAGES += \
     com.android.hardware.cas

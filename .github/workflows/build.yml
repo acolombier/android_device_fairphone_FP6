@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-22.04
     steps:      
     - name: Prepare
+      env:
+        S3_CREDS: ${{ secrets.S3_CREDS }}
+        S3_BUCKET: lineage-gh-ci
       run: |
         sudo apt update
         sudo apt install -y \
@@ -45,6 +48,7 @@ jobs:
           protobuf-compiler \
           python3-protobuf \
           rsync \
+          s3fs \
           schedtool \
           squashfs-tools \
           xsltproc \
@@ -55,6 +59,10 @@ jobs:
         curl https://storage.googleapis.com/git-repo-downloads/repo > ${{ github.workspace }}/bin/repo
         chmod a+x ${{ github.workspace }}/bin/repo
         echo "PATH=${{ github.workspace }}/bin:$PATH" >> "${GITHUB_ENV}"
+        echo "${S3_CREDS}" > ${HOME}/.passwd-s3fs
+        chmod 600 ${HOME}/.passwd-s3fs
+        mkdir -p /mnt/s3
+        s3fs "${S3_BUCKET}" /mnt/s3 -o passwd_file=${HOME}/.passwd-s3fs -o url=https://s3.ca-east-tor.io.cloud.ovh.net/ -o use_path_request_style
         python3 --version
     - name: Download lineage
       working-directory: ${{ github.workspace }}/android/lineage

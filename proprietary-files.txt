@@ -592,6 +592,7 @@ system/lib64/vendor.tcl.camera.algoservice-V2-ndk.so:system/lib64/vendor.tcl.cam
 vendor/bin/aecxsimulator;DISABLE_CHECKELF;DISABLE_DEPS
 vendor/etc/init/algoservice-default.rc
 vendor/lib64/libcamera2ndk_vendor.so
+system/priv-app/FPCamera/FPCamera.apk
 
 # Camera firmware
 vendor/firmware/CAMERA_ICP.b00
