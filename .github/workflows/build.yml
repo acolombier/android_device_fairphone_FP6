@@ -54,16 +54,16 @@ jobs:
           xsltproc \
           zip \
           zlib1g-dev
-        mkdir -p ${{ github.workspace }}/bin
-        mkdir -p ${{ github.workspace }}/android/lineage
-        curl https://storage.googleapis.com/git-repo-downloads/repo > ${{ github.workspace }}/bin/repo
-        chmod a+x ${{ github.workspace }}/bin/repo
-        echo "PATH=${{ github.workspace }}/bin:$PATH" >> "${GITHUB_ENV}"
         echo "${S3_CREDS}" > ${HOME}/.passwd-s3fs
         chmod 600 ${HOME}/.passwd-s3fs
         sudo mkdir -p /mnt/s3
         sudo s3fs "${S3_BUCKET}" /mnt/s3 -o passwd_file=${HOME}/.passwd-s3fs -o use_path_request_style,allow_other,url=https://s3.ca-east-tor.io.cloud.ovh.net/
         touch /mnt/s3/.ready
+        mkdir -p /mnt/s3/bin
+        mkdir -p /mnt/s3/android/lineage
+        curl https://storage.googleapis.com/git-repo-downloads/repo > /mnt/s3/bin/repo
+        chmod a+x /mnt/s3/bin/repo
+        echo "PATH=/mnt/s3/bin:$PATH" >> "${GITHUB_ENV}"
         python3 --version
     - name: Download lineage
       working-directory: /mnt/s3/android/lineage
