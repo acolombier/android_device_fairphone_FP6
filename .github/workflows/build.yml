@@ -94,7 +94,7 @@ jobs:
       working-directory: /mnt/s3/android/lineage
       run: |
         repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --no-clone-bundle --verbose 
-        repo sync --verbose -n -j 4
+        mkdir -p .repo/local_manifests/
         cat > .repo/local_manifests/fairphone_FP6.xml <<EOF
         <?xml version="1.0" encoding="UTF-8"?>
         <manifest>
@@ -112,6 +112,7 @@ jobs:
           <project name="ArianK16a/android_packages_apps_AlertSlider" path="packages/apps/AlertSlider" remote="github" revision="lineage-22.2" />
         </manifest>
         EOF
+        repo sync --verbose -j 4
     - name: Prepare vendor
       working-directory: /mnt/s3/android/lineage/device/fairphone/FP6
       run: |
