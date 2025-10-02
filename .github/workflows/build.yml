@@ -99,7 +99,7 @@ jobs:
         <?xml version="1.0" encoding="UTF-8"?>
         <manifest>
           <!-- Device trees -->
-          <project name="ArianK16a/android_device_fairphone_FP6" path="device/fairphone/FP6" remote="github" revision="lineage-22.2" />
+          <project name="acolombier/android_device_fairphone_FP6" path="device/fairphone/FP6" remote="github" revision="lineage-22.2" />
 
           <!-- Kernel -->
           <project name="ArianK16a/android_kernel_fairphone_sm7635" path="kernel/fairphone/sm7635" remote="github" revision="lineage-22.2"  />
@@ -113,14 +113,23 @@ jobs:
         </manifest>
         EOF
         repo sync --verbose -j 4
+        ls -l device/fairphone/FP6
     - name: Prepare vendor
       working-directory: /mnt/s3/android/lineage/device/fairphone/FP6
       run: |
         ./extract-files.py https://fairphone-android-builds.ams3.digitaloceanspaces.com/FP6/A15/FP6.QREL.15.122.0.20250718182448_VS1E-factory.zip
+    - name: Build
+      working-directory: /mnt/s3/android/lineage/
+      env:
+        CCACHE_EXEC: /usr/bin/ccache
+        USE_CCACHE: 1
+      run: |
+        source build/envsetup.sh
+        brunch FP6 userdebug
     - name: Umount
       if: always()
       run: |
-        umount /mnt/s3
+        umount.s3ql /mnt/s3
     - name: Cleanup
       if: always() && vars.AUTO_CLEANUP != null
       run: |
