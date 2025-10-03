@@ -113,7 +113,7 @@ jobs:
           <project name="ArianK16a/android_packages_apps_AlertSlider" path="packages/apps/AlertSlider" remote="github" revision="lineage-22.2" />
         </manifest>
         EOF
-        repo sync --verbose -c -j -n -j 2 && repo sync -c -l -j `nproc --all`
+        repo sync --verbose -c -j `nproc --all`
         ls -l device/fairphone/FP6
     - name: Prepare vendor
       working-directory: /mnt/s3/android/lineage/device/fairphone/FP6
