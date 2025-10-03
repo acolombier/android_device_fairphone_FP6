@@ -93,6 +93,7 @@ jobs:
     - name: Download lineage
       working-directory: /mnt/s3/android/lineage
       run: |
+        set -x
         repo init --depth=1 -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --no-clone-bundle --verbose 
         mkdir -p .repo/local_manifests/
         cat > .repo/local_manifests/fairphone_FP6.xml <<EOF
@@ -112,7 +113,7 @@ jobs:
           <project name="ArianK16a/android_packages_apps_AlertSlider" path="packages/apps/AlertSlider" remote="github" revision="lineage-22.2" />
         </manifest>
         EOF
-        repo sync --verbose -j 4
+        repo sync --verbose -c -j `nproc --all`
         ls -l device/fairphone/FP6
     - name: Prepare vendor
       working-directory: /mnt/s3/android/lineage/device/fairphone/FP6
@@ -124,16 +125,20 @@ jobs:
         CCACHE_EXEC: /usr/bin/ccache
         USE_CCACHE: 1
       run: |
+        set -x
         source build/envsetup.sh
         brunch FP6 userdebug
     - name: Umount
-      if: always()
-      run: |
-        umount.s3ql /mnt/s3
+      uses: nick-fields/retry@v3
+      with:
+        timeout_minutes: 10
+        retry_wait_seconds: 60
+        max_attempts: 3
+        command: |
+          umount.s3ql /mnt/s3
     - name: Cleanup
       if: always() && vars.AUTO_CLEANUP != null
       run: |
-        python3 -m pip install awscli
-        aws s3 rm --endpoint-url https://s3.ca-east-tor.io.cloud.ovh.net/ --recursive lineage-gh-ci/
+        yes yes | s3qladm --authfile ~/.s3ql/authinfo2 clear s3c://s3.ca-east-tor.io.cloud.ovh.net/lineage-gh-ci
 
 
